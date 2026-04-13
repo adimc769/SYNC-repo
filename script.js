@@ -422,24 +422,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('auth-tab-signin')?.addEventListener('click', () => setAuthView(false));
     document.getElementById('auth-tab-signup')?.addEventListener('click', () => setAuthView(true));
 
-    /** 
+    /**
      * Returns the base URL for OAuth redirects.
-     * Prioritizes the current browser origin to ensure it works on the device actually being used (e.g., phone vs pc).
+     * Uses the current browser origin so OAuth always returns to the
+     * exact domain/environment the user is currently on.
      */
     function getAppBaseUrl() {
         const origin = window.location.origin;
-        const host = window.location.hostname;
-        const isLocal = host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local') || /^192\.168\./.test(host);
-        
-        // Potential environment variable from Vercel/Vite build
-        const envUrl = String(import.meta.env.VITE_SITE_URL || '').trim().replace(/\/+$/, '');
-
-        // Use envUrl only if it's NOT a localhost URL while on a non-local machine
-        if (envUrl && !isLocal && !envUrl.includes('localhost')) {
-            return envUrl;
-        }
-
-        // Fallback to the current browser origin (safest for mobile & Vercel)
         const finalUrl = origin.endsWith('/') ? origin : origin + '/';
         console.log('[Auth] Redirect URL payload:', finalUrl);
         return finalUrl;
